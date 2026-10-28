@@ -1,0 +1,70 @@
+project:
+  name: temporal-echo-chambers
+  seed: 42
+  mode: snap
+
+paths:
+  raw_dir: data/raw
+  interim_dir: data/interim
+  results_root: results
+  run_name: snap-quarterly-default
+
+input:
+  hyperlink_files:
+    - soc-redditHyperlinks-title.tsv
+    - soc-redditHyperlinks-body.tsv
+  embedding_file: web-redditEmbeddings-subreddits.csv
+  timezone: UTC
+  duplicate_policy: same-post-source-target
+  invalid_row_policy: quarantine
+  self_loop_policy: drop-and-count
+  missing_embedding_policy: exclude-from-similarity
+  name_policy: strip-and-casefold
+
+windows:
+  type: calendar_quarter
+  start: "2014-01-01T00:00:00Z"
+  end_exclusive: "2017-05-01T00:00:00Z"
+  include_empty: true
+  min_event_count_for_analysis: 50
+
+network:
+  edge_weight: event_count
+  negative_label_handling: ignore_sign_for_topology
+  detector_projection: undirected_sum
+  include_isolated_nodes_from_global_universe: false
+
+community_detection:
+  algorithm: louvain
+  resolution: 1.0
+  seed: 42
+  minimum_report_size: 3
+  minimum_report_edge_events: 5
+
+metrics:
+  isolation:
+    mode: outgoing_volume
+  homogeneity:
+    mapping: cosine_to_unit_interval
+    minimum_coverage: 0.7
+    minimum_embedded_nodes: 2
+  external_diversity:
+    entropy_denominator: reachable_external_communities
+    zero_external_policy: no_exposure_as_zero_diversity
+
+eci:
+  weights:
+    isolation: 0.3333333333333333
+    homogeneity: 0.3333333333333333
+    exposure_scarcity: 0.3333333333333334
+
+tracking:
+  min_jaccard: 0.2
+  min_intersection: 2
+  strategy: hungarian_one_to_one
+
+analysis:
+  bootstrap_resamples: 200
+  bootstrap_seed: 142
+  null_permutations: 100
+  max_plot_nodes: 300

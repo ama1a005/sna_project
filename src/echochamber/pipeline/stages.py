@@ -28,6 +28,7 @@ from echochamber.metrics.diversity import compute_community_external_diversity
 from echochamber.metrics.eci import compute_eci
 from echochamber.metrics.homogeneity import compute_community_homogeneity
 from echochamber.metrics.isolation import compute_isolation
+from echochamber.metrics.sentiment import compute_community_sentiment
 from echochamber.storage.io import export_safe_csv, write_parquet_df
 from echochamber.visualization.graph_subview import plot_community_subgraph
 from echochamber.visualization.plots import (
@@ -278,6 +279,9 @@ def stage_06_metrics(config: EchoChamberConfig, state: dict[str, Any]) -> dict[s
                 w_scarcity=config.eci.weights.exposure_scarcity,
             )
 
+            # 5. Signed Sentiment Isolation (Novel Research Contribution)
+            sent = compute_community_sentiment(di_g, node_set)
+
             metrics_records.append({
                 "window_id": w_id,
                 "community_id": cid,
@@ -294,6 +298,14 @@ def stage_06_metrics(config: EchoChamberConfig, state: dict[str, Any]) -> dict[s
                 "w_out": w_out,
                 "eci": eci_val,
                 "scorable": is_scorable,
+                "sr_internal": sent["sr_internal"],
+                "sr_external": sent["sr_external"],
+                "sentiment_asymmetry": sent["sentiment_asymmetry"],
+                "hostility_weighted_isolation": sent["hostility_weighted_isolation"],
+                "positive_internal_count": sent["positive_internal_count"],
+                "negative_internal_count": sent["negative_internal_count"],
+                "positive_external_count": sent["positive_external_count"],
+                "negative_external_count": sent["negative_external_count"],
             })
 
     metrics_df = pd.DataFrame(metrics_records)

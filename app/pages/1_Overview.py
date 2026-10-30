@@ -31,7 +31,7 @@ with col_a:
     st.markdown("### 📈 Echo Chamber Index (ECI) Distribution")
     dist_plot = get_plot_path(selected_run, "eci_distribution.png")
     if dist_plot and dist_plot.exists():
-        st.image(str(dist_plot), use_container_width=True)
+        st.image(dist_plot.read_bytes())
     elif not metrics_df.empty:
         scorable = metrics_df[metrics_df["scorable"] == True]
         fig = px.histogram(scorable, x="eci", nbins=15, title="ECI Distribution")
@@ -41,7 +41,7 @@ with col_b:
     st.markdown("### ⚖️ Isolation vs. Homogeneity Space")
     scatter_plot = get_plot_path(selected_run, "isolation_vs_homogeneity.png")
     if scatter_plot and scatter_plot.exists():
-        st.image(str(scatter_plot), use_container_width=True)
+        st.image(scatter_plot.read_bytes())
     elif not metrics_df.empty:
         scorable = metrics_df[metrics_df["scorable"] == True]
         fig = px.scatter(

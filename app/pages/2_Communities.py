@@ -53,6 +53,6 @@ if comm_list:
 st.markdown("### 🕸️ Community Subview Graph")
 subgraph_plot = get_plot_path(selected_run, "community_subgraph.png")
 if subgraph_plot and subgraph_plot.exists():
-    st.image(str(subgraph_plot), caption="Induced Subgraph of Detected Communities", use_container_width=True)
+    st.image(subgraph_plot.read_bytes(), caption="Induced Subgraph of Detected Communities")
 else:
     st.info("Community subgraph visualization not generated for this run.")

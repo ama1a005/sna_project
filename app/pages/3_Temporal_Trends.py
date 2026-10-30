@@ -25,7 +25,7 @@ if tracking_df.empty or metrics_df.empty:
 st.markdown("### 📈 Longitudinal ECI Trajectories")
 traj_plot = get_plot_path(selected_run, "temporal_trajectories.png")
 if traj_plot and traj_plot.exists():
-    st.image(str(traj_plot), use_container_width=True)
+    st.image(traj_plot.read_bytes())
 
 # Merge tracking with metrics
 merged = pd_merged = pd_track = metrics_df.merge(tracking_df, on=["window_id", "community_id", "track_id"], how="inner")
